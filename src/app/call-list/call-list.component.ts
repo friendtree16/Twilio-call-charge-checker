@@ -5,6 +5,7 @@ import { Call } from '../entity/call';
 import { CallListResponse, CallRow } from '../entity/call-list-response';
 
 import { map } from 'rxjs/operators';
+import { IncomingPhoneNumberResponse } from '../entity/incoming-phone-number-response';
 
 const httpOptions = {
   headers: new HttpHeaders({ 
@@ -12,6 +13,8 @@ const httpOptions = {
     'Authorization':'Basic ' + btoa(environment.sid + ':' + environment.token)
   })
 };
+
+const baseUrl = 'https://api.twilio.com/2010-04-01/Accounts/' + environment.sid;
 
 @Component({
   selector: 'app-call-list',
@@ -22,19 +25,65 @@ export class CallListComponent implements OnInit {
 
   constructor(private http: HttpClient) { }
 
-  calls = [];
-  baseUrl = 'https://api.twilio.com/2010-04-01/Accounts/' + environment.sid;
+  calls: Array<Call> = [];
+
+  years = [];
+  selectedYear: string;
+
+  months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+  selectedMonth: string;
 
   ngOnInit() {
-    this.fetchCallHistory();
+    var now = new Date();
+    this.selectedYear  = now.getFullYear().toString();
+    // 2年前まで確認できる
+    for(var previousCount =0 ; previousCount <= 2; previousCount++) {
+      let tmpYear = now.getFullYear() - previousCount;
+      this.years.push(tmpYear);
+    }
+    this.years.push();
+    this.selectedMonth = this.zeroPadding(now.getMonth() + 1 ,2);    //月
+    this.fetchPhoneNumber();
   }
 
-  fetchCallHistory(pageUrl:string = null){
-    var requestParam = '?StartTime%3E=2019-02-01&EndTime%3C=2019-02-28';
+  // click event
+  onClickMonth(month) {
+    this.selectedMonth = month;
+    this.clearCalls();
+    this.fetchCallHistory(this.createStartTime(this.selectedYear,this.selectedMonth),this.createEndTime(this.selectedYear,this.selectedMonth));
+  }
+
+  onClickYear(year) {
+    this.selectedYear = year;
+    this.clearCalls();
+    this.fetchCallHistory(this.createStartTime(this.selectedYear,this.selectedMonth),this.createEndTime(this.selectedYear,this.selectedMonth));
+  }
+
+  clearCalls() {
+    this.calls.forEach(row => row.clear());
+  }
+
+  fetchPhoneNumber() {
+    let requestUrl = baseUrl + '/IncomingPhoneNumbers.json';
+    this.http.get<IncomingPhoneNumberResponse>(requestUrl,httpOptions)
+    .pipe(
+      map(respose => new IncomingPhoneNumberResponse(respose))
+    )
+    .subscribe(response => {
+      response.incoming_phone_numbers.forEach(row => {
+        this.calls.push(new Call(row));
+      });
+      
+      this.fetchCallHistory(this.createStartTime(this.selectedYear,this.selectedMonth),this.createEndTime(this.selectedYear,this.selectedMonth));
+    });
+  }
+
+  fetchCallHistory(startTime: string, endTime: string, pageUrl:string = null){
+    var requestParam = '?StartTime%3E=' + startTime + '&EndTime%3C=' + endTime;
     if(pageUrl) {
       requestParam += '&nextpageuri=' + pageUrl;
     }
-    let requestUrl = this.baseUrl + '/Calls.json' + requestParam;
+    let requestUrl = baseUrl + '/Calls.json' + requestParam;
     this.http.get<CallListResponse>(requestUrl,httpOptions)
     .pipe(
       map(response => new CallListResponse(response))
@@ -59,8 +108,22 @@ export class CallListComponent implements OnInit {
       });
       console.log(this.calls);
       if(response.next_page_uri) {
-        this.fetchCallHistory(response.next_page_uri);
+        this.fetchCallHistory(startTime, endTime, response.next_page_uri);
       }
     });
   }
+
+  zeroPadding(num,length){
+    return ('0000000000' + num).slice(-length);
+  }
+
+  createStartTime(year, month): string {
+    return year + '-' + month + '-01';
+  }
+
+  createEndTime(year, month): string {
+    let lastDate = new Date(Number(year),Number(month),0);
+    return year + '-' + month + '-' + lastDate.getDate();
+  }
+
 }

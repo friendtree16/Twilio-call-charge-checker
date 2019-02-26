@@ -2,6 +2,26 @@
   <app-page-header [heading]="'CallList'" [icon]="'fa-table'"></app-page-header>
   <div class="row justify-content-center">
       <div class="col-10 col-xl-10 col-lg-12">
+        <div class="row justify-content-end">
+            <div class="row">
+                <div class="col">
+                  <div ngbDropdown class="d-inline-block">
+                    <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle> {{ selectedYear }}年</button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                      <button class="dropdown-item" *ngFor="let year of years" (click)="onClickYear(year)"> {{ year }}年 </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <div ngbDropdown class="d-inline-block">
+                    <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle> {{ selectedMonth }}月</button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                      <button class="dropdown-item" *ngFor="let month of months" (click)="onClickMonth(month)"> {{ month }}月 </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           <div class="card mb-3">
               <div class="card-header">Striped Rows</div>
               <div class="card-body table-responsive">
