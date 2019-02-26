@@ -6,15 +6,7 @@ import { CallListResponse, CallRow } from '../entity/call-list-response';
 
 import { map } from 'rxjs/operators';
 import { IncomingPhoneNumberResponse } from '../entity/incoming-phone-number-response';
-
-const httpOptions = {
-  headers: new HttpHeaders({ 
-    'Content-Type':'application/x-www-form-urlencoded',
-    'Authorization':'Basic ' + btoa(environment.sid + ':' + environment.token)
-  })
-};
-
-const baseUrl = 'https://api.twilio.com/2010-04-01/Accounts/' + environment.sid;
+import { LoginService } from '../service/login.service';
 
 @Component({
   selector: 'app-call-list',
@@ -23,7 +15,16 @@ const baseUrl = 'https://api.twilio.com/2010-04-01/Accounts/' + environment.sid;
 })
 export class CallListComponent implements OnInit {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private loginService:LoginService) { }
+
+  httpOptions = {
+    headers: new HttpHeaders({ 
+      'Content-Type':'application/x-www-form-urlencoded',
+      'Authorization':'Basic ' + btoa(this.loginService.getAccountSid() + ':' + this.loginService.getAccessToken())
+    })
+  };
+
+  baseUrl = 'https://api.twilio.com/2010-04-01/Accounts/' + this.loginService.getAccountSid();
 
   calls: Array<Call> = [];
 
@@ -64,8 +65,8 @@ export class CallListComponent implements OnInit {
   }
 
   fetchPhoneNumber() {
-    let requestUrl = baseUrl + '/IncomingPhoneNumbers.json';
-    this.http.get<IncomingPhoneNumberResponse>(requestUrl,httpOptions)
+    let requestUrl = this.baseUrl + '/IncomingPhoneNumbers.json';
+    this.http.get<IncomingPhoneNumberResponse>(requestUrl,this.httpOptions)
     .pipe(
       map(respose => new IncomingPhoneNumberResponse(respose))
     )
@@ -83,8 +84,8 @@ export class CallListComponent implements OnInit {
     if(pageUrl) {
       requestParam += '&nextpageuri=' + pageUrl;
     }
-    let requestUrl = baseUrl + '/Calls.json' + requestParam;
-    this.http.get<CallListResponse>(requestUrl,httpOptions)
+    let requestUrl = this.baseUrl + '/Calls.json' + requestParam;
+    this.http.get<CallListResponse>(requestUrl, this.httpOptions)
     .pipe(
       map(response => new CallListResponse(response))
     )
@@ -106,7 +107,6 @@ export class CallListComponent implements OnInit {
           tmpCall.marge(row);
         }
       });
-      console.log(this.calls);
       if(response.next_page_uri) {
         this.fetchCallHistory(startTime, endTime, response.next_page_uri);
       }

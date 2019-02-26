@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { CallListComponent } from './call-list/call-list.component';
+import { AuthGuard } from './guard/auth.guard';
 
 const routes: Routes = [
-  {path:'',redirectTo:'list',pathMatch:'prefix'},
-  {path:'list',component:CallListComponent}
+  {path:'',redirectTo:'login',pathMatch:'prefix'},
+  {path:'login',loadChildren: './login/login.module#LoginModule'},
+  {path:'list',loadChildren: './call-list/call-list.module#CallListModule',canActivate: [AuthGuard]}
 ];
 
 @NgModule({
