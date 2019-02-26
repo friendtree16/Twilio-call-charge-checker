@@ -1,0 +1,32 @@
+<div>
+  <app-page-header [heading]="'CallList'" [icon]="'fa-table'"></app-page-header>
+  <div class="row justify-content-center">
+      <div class="col-10 col-xl-10 col-lg-12">
+          <div class="card mb-3">
+              <div class="card-header">Striped Rows</div>
+              <div class="card-body table-responsive">
+                  <table class="table table-hover table-striped">
+                      <thead>
+                      <tr>
+                          <th>phone number</th>
+                          <th>name</th>
+                          <th>incoming call Time[min]</th>
+                          <th>outbound call Time[min]</th>
+                          <th>call charge[円]</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr *ngFor="let call of calls">
+                          <td>{{ call.phoneNumber }}</td>
+                          <td>{{ call.friendlyName }}</td>
+                          <td>{{ call.inbountCallTime | time: 'min' }}</td>
+                          <td>{{ call.outboutCallTime | time: 'min' }}</td>
+                          <td>{{ call.price }} 円</td>
+                      </tr>
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
