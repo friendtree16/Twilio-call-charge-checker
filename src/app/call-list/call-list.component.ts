@@ -60,6 +60,11 @@ export class CallListComponent implements OnInit {
     this.fetchCallHistory(this.createStartTime(this.selectedYear,this.selectedMonth),this.createEndTime(this.selectedYear,this.selectedMonth));
   }
 
+  onClickReload() {
+    this.clearCalls();
+    this.fetchCallHistory(this.createStartTime(this.selectedYear,this.selectedMonth),this.createEndTime(this.selectedYear,this.selectedMonth));
+  }
+
   clearCalls() {
     this.calls.forEach(row => row.clear());
   }
