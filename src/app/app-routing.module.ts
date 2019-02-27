@@ -5,7 +5,8 @@ import { AuthGuard } from './guard/auth.guard';
 const routes: Routes = [
   {path:'',redirectTo:'login',pathMatch:'prefix'},
   {path:'login',loadChildren: './login/login.module#LoginModule'},
-  {path:'list',loadChildren: './call-list/call-list.module#CallListModule',canActivate: [AuthGuard]}
+  {path:'list',loadChildren: './call-list/call-list.module#CallListModule',canActivate: [AuthGuard]},
+  {path:'**',redirectTo:'login',pathMatch:'prefix'}
 ];
 
 @NgModule({
