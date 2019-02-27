@@ -1,10 +1,35 @@
-# CallList
+# Twilio call charge checker
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.0.
+
+##  初期化
+
+ダウンロードしたディレクトリ内で`nmp install`コマンドを実行し、必要なライブラリをインストールしてください。
+
+## ローカル環境での実行
+
+ダウンロードしたディレクトリ内で`ng serve`を実行してくだい。
+`http://localhost:4200/`にてアクセスできるようになります。
+
+## 使い方
+
+** このアプリケーションは日本リージョンのみで使用可能です。**
+アプリを起動した最初の画面にて ** Twilio Account SID ** と ** Access Token ** を入力します。
+** Twilio Account SID ** は ** Access Token ** [console](https://jp.twilio.com/console)より取得できます。
+
+## Initialize
+
+Run `nmp install` to install library
 
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+
+## Usage
+
+** This application is available only in Japan region. **
+
+You input ** Twilio Account SID ** and ** Access Token ** in first view, that you can obtain from the [console-jp](https://jp.twilio.com/console).
 
 ## Code scaffolding
 
