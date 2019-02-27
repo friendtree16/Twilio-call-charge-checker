@@ -64,8 +64,11 @@ export class CallListComponent implements OnInit {
     this.calls.forEach(row => row.clear());
   }
 
-  fetchPhoneNumber() {
+  fetchPhoneNumber(pageUrl:string = null) {
     let requestUrl = this.baseUrl + '/IncomingPhoneNumbers.json';
+    if(pageUrl) {
+      requestUrl += '&nextpageuri=' + pageUrl;
+    }
     this.http.get<IncomingPhoneNumberResponse>(requestUrl,this.httpOptions)
     .pipe(
       map(respose => new IncomingPhoneNumberResponse(respose))
@@ -75,7 +78,11 @@ export class CallListComponent implements OnInit {
         this.calls.push(new Call(row));
       });
       
-      this.fetchCallHistory(this.createStartTime(this.selectedYear,this.selectedMonth),this.createEndTime(this.selectedYear,this.selectedMonth));
+      if(response.next_page_uri) {
+        this.fetchPhoneNumber(response.next_page_uri);
+      } else {
+        this.fetchCallHistory(this.createStartTime(this.selectedYear,this.selectedMonth),this.createEndTime(this.selectedYear,this.selectedMonth));
+      }
     });
   }
 
