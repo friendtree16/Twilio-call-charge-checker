@@ -134,8 +134,8 @@ export class CallListComponent implements OnInit {
   }
 
   createEndTime(year, month): string {
-    let lastDate = new Date(Number(year),Number(month),0);
-    return year + '-' + month + '-' + lastDate.getDate();
+    let nextMonth = month + 1;
+    return year + '-' + nextMonth + '-' + '-01';
   }
 
 }
